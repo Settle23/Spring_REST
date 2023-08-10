@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>User info</title>
+</head>
+<body>
+<h2>Details about user:</h2>
+
+<th:block>
+  <table>
+    <tr>
+      <td><b>Name:</b></td>
+      <td th:text = "${user.getFirstName()}"></td>
+    </tr>
+    <tr>
+      <td><b>Surname:</b></td>
+      <td th:text = "${user.getLastName()}"></td>
+    </tr>
+    <tr>
+      <td><b>Age:</b></td>
+      <td th:text = "${user.getAge()}"></td>
+    </tr>
+    <tr>
+      <td><b>Roles:</b></td>
+      <td th:text = "${user.getEmail()}"></td>
+    </tr>
+    <tr>
+      <td><b>Roles:</b></td>
+      <td th:text = "${user.getRoles()}"></td>
+    </tr>
+  </table>
+</th:block>
+
+<br>
+<a th:href="@{/admin/}">Back to users list</a>
+<br>
+<a th:href="@{/logout}">Logout</a>
+<br>
+
+</body>
+</html>
