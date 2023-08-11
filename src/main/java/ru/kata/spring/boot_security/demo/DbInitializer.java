@@ -32,7 +32,7 @@ public class DbInitializer {
 
         User admin = new User("Admin", "User", (byte) 30, "admin@example.com",
                 "admin", "password", adminRoles);
-        userService.adduser(admin);
+        userService.addUser(admin);
 
         Role userRole = new Role("ROLE_USER");
         Set<Role> userRoles = new HashSet<>();
@@ -41,6 +41,6 @@ public class DbInitializer {
 
         User regUser = new User("Regular", "User", (byte) 25, "user@example.com",
                 "user", "password", userRoles);
-        userService.adduser(regUser);
+        userService.addUser(regUser);
     }
 }

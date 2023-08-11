@@ -46,7 +46,7 @@ public class AdminController {
         if (bindingResult.hasErrors()) {
             return "new";
         }
-        userService.adduser(user);
+        userService.addUser(user);
         return "redirect:/admin";
     }
 
