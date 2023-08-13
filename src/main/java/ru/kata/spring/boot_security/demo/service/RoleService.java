@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 public interface RoleService {
-    Role saveRole(Role role);
-    List<Role> roles();
+
+    List<Role> getAllRoles();
+
+    void saveRole(Role role);
+
+    Role getRoleById(long id);
 }

@@ -1,9 +1,12 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
 
@@ -15,36 +18,54 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(name = "name")
+    @NotNull
+    @NotEmpty(message = "First name should not be empty")
+    @Size(min = 2, max = 30, message = "First name should be between 2 to 30")
+
     private String firstName;
 
     @Column(name = "last_name")
+    @NotNull
+    @NotEmpty(message = "Last name should not be empty")
     private String lastName;
 
     @Column(name = "age")
+    @NotNull
+    @Min(value = 0, message = "Age should be more 0")
+    @Max(value = 130, message = "Age should be less 130")
     private Byte age;
-
+    @Email(message = "Email must be valid")
+    @NotEmpty(message = "E-mail should not be empty")
     @Column(name = "email")
     private String email;
-    @Column(name = "username", unique = true)
-    private String username;
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Fetch(FetchMode.JOIN)
+    @ManyToMany
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, Byte age, String email, String username, String password, Set<Role> roles) {
+    public User(String firstName, String lastName, Byte age, String email, String password, Set<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
         this.email = email;
-        this.username = username;
+        this.password = password;
+        this.roles = roles;
+    }
+
+    public User(Long id, String firstName, String lastName, Byte age, String email, String password, Set<Role> roles) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
         this.password = password;
         this.roles = roles;
     }
@@ -89,17 +110,13 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 
     public void setPassword(String password) {
@@ -137,5 +154,18 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Id: %d, Username: %s, E-mail: ", this.id, this.firstName, this.email);
+    }
+
+    public String rolesToString() {
+        StringBuilder str = new StringBuilder("");
+
+        this.roles.forEach(role -> str.append(role.getName()));
+
+        return str.toString();
     }
 }
