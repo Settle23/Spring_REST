@@ -1,87 +1,77 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.List;
+import javax.persistence.*;
+import java.util.Objects;
+
 
 @Entity
-@Table(name = "roles")
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+    private Integer id;
 
-    @Column(name = "name", unique = true)
-    private String name;
-    @Transient
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    @Column(name = "type")
+    private String roleType;
 
+    // constructors
     public Role() {
     }
 
-    public Role(String name) {
-        this.name = name;
+    public Role(String roleType) {
+        this.roleType = roleType;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
+    public Role(Integer id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Role(Integer id, String roleType) {
+        this.id = id;
+        this.roleType = roleType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    // getters and setters
+
+    public Integer getId() {
+        return id;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public String getRoleType() {
+        return roleType;
     }
 
+    public void setRoleType(String roleType) {
+        this.roleType = roleType;
+    }
+
+
+    // override methods
     @Override
     public String getAuthority() {
-        return getName();
+        return getRoleType();
     }
 
     @Override
     public String toString() {
-        return this.name;
+        return roleType.substring(5);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return id == role.id && Objects.equals(roleType, role.roleType);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Role other = (Role) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
+        return Objects.hash(id, roleType);
     }
 }

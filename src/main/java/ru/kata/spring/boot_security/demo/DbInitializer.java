@@ -1,6 +1,6 @@
 package ru.kata.spring.boot_security.demo;
 
-import jakarta.annotation.PostConstruct;
+;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.model.Role;
@@ -8,42 +8,33 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 
 @Component
 public class DbInitializer {
-    private final UserService userService;
     private final RoleService roleService;
+    private final UserService userService;
 
     @Autowired
-    public DbInitializer(UserService userService, RoleService roleService) {
-        this.userService = userService;
+    public DbInitializer(RoleService roleService, UserService userService) {
         this.roleService = roleService;
+        this.userService = userService;
     }
 
-
     @PostConstruct
-    public void initUsers() {
+    public void initialization() {
+        Role adminRole = new Role("ROLE_ADMIN");
+        Role userRole = new Role("ROLE_USER");
 
-        Role adminRole = new Role("ADMIN");
-        Set<Role> adminRoles = new HashSet<>();
-        adminRoles.add(adminRole);
-
-        roleService.saveRole(adminRole);
-
-        Role userRole = new Role("USER");
-        Set<Role> userRoles = new HashSet<>();
-        userRoles.add(userRole);
-
-        roleService.saveRole(userRole);
-
-        User admin = new User("admin", "admin", (byte) 25, "admin@mail.ru", "password", adminRoles);
-
+        roleService.save(adminRole);
+        roleService.save(userRole);
+        User admin = new User("Admin", "Admin", (byte) 20, "admin", "password", Set.of(adminRole));
         userService.addUser(admin);
 
-        User user = new User("user", "user", (byte) 30, "user@mail.ru", "password", userRoles);
-
+        roleService.save(userRole);
+        User user = new User("User", "User", (byte) 20, "user", "password", Set.of(userRole));
         userService.addUser(user);
     }
 }

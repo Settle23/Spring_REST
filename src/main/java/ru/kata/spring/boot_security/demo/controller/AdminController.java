@@ -1,56 +1,67 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
 import java.security.Principal;
+import java.util.List;
 
-@Controller
-@RequestMapping("/admin")
+@RestController
+@RequestMapping("api/admin")
 public class AdminController {
-
     private final UserService userService;
     private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService usersService, RoleService roleService) {
-        this.userService = usersService;
+    public AdminController(UserService userService, RoleService roleService) {
+        this.userService = userService;
         this.roleService = roleService;
     }
 
-    @GetMapping()
-    public String getAdminPanel(Principal principal, Model model) {
-
-        model.addAttribute("newUser", new User());
-        model.addAttribute("roles", roleService.getAllRoles());
-        model.addAttribute("authUser", userService.findByEmail(principal.getName()));
-        model.addAttribute("users", userService.getAllUsers());
-        return "admin/index";
+    @GetMapping
+    public ResponseEntity<List<User>> getUsersList() {
+        return new ResponseEntity<>(userService.getUsersList(), HttpStatus.OK);
     }
 
-    @PostMapping()
-    public String saveUser(@ModelAttribute("newUser") @Valid User newUser, BindingResult bindingResult) {
-
-        userService.addUser(newUser);
-        return "redirect:/admin";
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getById(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(userService.getById(id), HttpStatus.OK);
     }
 
-    @DeleteMapping("/users/{id}")
-    public String deleteEvent(@PathVariable("id") long id) {
+    @PostMapping
+    public ResponseEntity<Void> addUser(@RequestBody User user) {
+        userService.addUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    public ResponseEntity<Void> editUser(@RequestBody User user) {
+        userService.editUser(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Integer id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping("/users/{id}")
-    public String updateUser(@ModelAttribute("user") @Valid User user,
-                             @PathVariable("id") long id) {
-        userService.updateUser(user, id);
-        return "redirect:/admin";
+    @GetMapping("/current")
+    public ResponseEntity<User> currentUser(Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Role>> getRolesList() {
+        List<Role> roles = roleService.getRolesList();
+        return new ResponseEntity<>(roles, HttpStatus.OK);
     }
 }
+
