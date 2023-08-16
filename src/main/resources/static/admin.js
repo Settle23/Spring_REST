@@ -195,14 +195,18 @@ function showEditModal(id) {
             document.getElementById('ageEdit').setAttribute('value', editUser.age);
             document.getElementById('usernameEdit').setAttribute('value', editUser.username);
             document.getElementById('passwordEdit').setAttribute('value', editUser.password);
-            if ((editUser.roles.map(role => role.id)) == 1 && ((editUser.roles.map(role => role.id)) == 2)) {
-                document.getElementById('rolesEdit1').setAttribute('selected', 'true');
-                document.getElementById('rolesEdit2').setAttribute('selected', 'true');
-            } else if ((editUser.roles.map(role => role.id)) == 1) {
-                document.getElementById('rolesEdit1').setAttribute('selected', 'true');
-            } else if (editUser.roles.map(role => role.id) == 2) {
-                document.getElementById('rolesEdit2').setAttribute('selected', 'true');
-            }
+        const roleIds = editUser.roles.map(role => role.id);
+
+        if (roleIds.includes(1) && roleIds.includes(2)) {
+            document.getElementById('rolesEdit1').setAttribute('selected', 'true');
+            document.getElementById('rolesEdit2').setAttribute('selected', 'true');
+        } else if (roleIds.includes(1)) {
+            document.getElementById('rolesEdit1').setAttribute('selected', 'true');
+            document.getElementById('rolesEdit2').removeAttribute('selected');
+        } else if (roleIds.includes(2)) {
+            document.getElementById('rolesEdit1').removeAttribute('selected');
+            document.getElementById('rolesEdit2').setAttribute('selected', 'true');
+        }
             console.log(editUser)
             editModal.show();
         }
